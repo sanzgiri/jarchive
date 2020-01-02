@@ -2,7 +2,7 @@ name: get_new_games
 
 on: 
   schedule:
-    - cron: "*/1 * * * *"
+    - cron: "*/5 * * * *"
 
 jobs:
   get_new_games:
@@ -14,4 +14,5 @@ jobs:
       with:
         python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
         architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
-    - run: python my_script.py
+    - uses: sanzgiri/jarchive@v1
+        run echo "Hello World"
