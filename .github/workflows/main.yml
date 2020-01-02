@@ -9,4 +9,4 @@ jobs:
     name: get new games
     runs-on: ubuntu-latest
     steps:
-    - run: cd ../.. && pwd
+    - run: cd ../.. && ls
