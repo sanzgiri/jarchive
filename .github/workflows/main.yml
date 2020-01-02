@@ -9,4 +9,4 @@ jobs:
     name: get new games
     runs-on: ubuntu-latest
     steps:
-    - run: cd ../.. && cat get_new_games.sh
+    - run: cd ../.. && pwd
