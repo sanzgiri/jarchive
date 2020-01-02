@@ -9,4 +9,4 @@ jobs:
     name: get new games
     runs-on: ubuntu-latest
     steps:
-    - run: ls -l ../../jarchive
+    - run: cd ../../jarchive && ls -l
