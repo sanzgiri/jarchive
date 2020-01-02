@@ -1,6 +1,6 @@
 name: get_new_games
 
-on: "schedule(*/5 * * * *)"
+on: schedule(*/5 * * * *)
 
 jobs:
   build:
