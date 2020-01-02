@@ -9,4 +9,4 @@ jobs:
     name: get new games
     runs-on: ubuntu-latest
     steps:
-    - uses: ./get_new_games.sh
+    - run: ./get_new_games.sh
