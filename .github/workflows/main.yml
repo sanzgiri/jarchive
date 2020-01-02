@@ -7,4 +7,6 @@ on:
 jobs:
   get_new_games:
     name: get new games
-    run: get_new_games.sh
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ./get_new_games.sh
