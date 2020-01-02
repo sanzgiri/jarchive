@@ -1,23 +1,17 @@
 #!/usr/bin/env python -OO
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
-from __future__ import with_statement
 from bs4 import BeautifulSoup
 from glob import glob
 
 import argparse
 import os
 import re
-import sqlite3
-import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 def main(args):
     """Loop thru all the games and parse them."""
 
-    print "gid, airdate, rnd, category, value, text, answer"
+    print("gid, airdate, rnd, category, value, text, answer")
     for i, file_name in enumerate(glob(os.path.join(args.dir, "*.html")), 1):
         with open(os.path.abspath(file_name)) as f:
             parse_game(f, i)
@@ -71,7 +65,7 @@ def parse_round(bsoup, rnd, gid, airdate):
 
 
 def insert(clue):
-        print clue[0], '||' , clue[1], '||', clue[2], '||', clue[3], '||', clue[4], '||', clue[5], '||', clue[6]
+        print(clue[0], '||' , clue[1], '||', clue[2], '||', clue[3], '||', clue[4], '||', clue[5], '||', clue[6])
         return
 
 
