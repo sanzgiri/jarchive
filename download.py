@@ -3,19 +3,20 @@
 
 import itertools
 import os
-import urllib2
+from urllib.request import urlopen
+from urllib.error import HTTPError
 import time
-import futures as futures  # In Python 3 we can use "import concurrent.futures as futures"
+import concurrent.futures as futures  
 import sys
 
 SECONDS_BETWEEN_REQUESTS = 5
-ERROR_MSG = "ERROR: No game"
+ERROR_MSG = b"ERROR: No game"
 NUM_THREADS = 2  # Be conservative
 try:
     import multiprocessing
     # Since it's a lot of IO let's double # of actual cores
     NUM_THREADS = multiprocessing.cpu_count() * 2
-    print 'Using {} threads'.format(NUM_THREADS)
+    print(f"Using {NUM_THREADS} threads")
 except (ImportError, NotImplementedError):
     pass
 
@@ -24,10 +25,10 @@ def create_archive(adir, start):
     current_working_directory = os.path.dirname(os.path.abspath(__file__))
     archive_folder = os.path.join(current_working_directory, adir)
     if not os.path.isdir(archive_folder):
-        print "Making %s" % archive_folder
+        print(f"Making {archive_folder}")
         os.mkdir(archive_folder)
 
-    print "Downloading game files"
+    print("Downloading game files")
     download_pages(start, archive_folder)
 
 
@@ -54,13 +55,13 @@ def download_and_save_page(page, archive_folder):
         html = download_page(page)
         if ERROR_MSG in html:
             # Now we stop
-            print "Finished downloading. Now parse."
+            print("Finished downloading. Now parse.")
             return False
         elif html:
             save_file(html, destination_file_path)
             time.sleep(SECONDS_BETWEEN_REQUESTS)  # Remember to be kind to the server
     else:
-        print "Already downloaded %s" % destination_file_path
+        print(f"Already downloaded {destination_file_path}")
     return True
 
 
@@ -68,23 +69,23 @@ def download_page(page):
     url = 'http://j-archive.com/showgame.php?game_id=%s' % page
     html = None
     try:
-        response = urllib2.urlopen(url)
+        response = urlopen(url)
         if response.code == 200:
-            print "Downloading %s" % url
+            print(f"Downloading {url}")
             html = response.read()
         else:
-            print "Invalid URL: %s" % url
-    except urllib2.HTTPError:
-        print "failed to open %s" % url
+            print(f"Invalid URL: {url}")
+    except HTTPError:
+        print(f"failed to open{url}")
     return html
 
 
 def save_file(html, filename):
     try:
-        with open(filename, 'w') as f:
+        with open(filename, 'wb') as f:
             f.write(html)
     except IOError:
-        print "Couldn't write to file %s" % filename
+        print(f"Couldn't write to file {filename}")
 
 
 if __name__ == "__main__":
