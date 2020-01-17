@@ -3,6 +3,7 @@
 DIR="/home/ubuntu/jarchive"
 x=`cat $DIR/last_episode.txt`
 start=$(($x+1))
+
 /home/ubuntu/anaconda2/envs/jarchive/bin/python $DIR/download.py $DIR/new_games $start
 /home/ubuntu/anaconda2/envs/jarchive/bin/python $DIR/parser.py -d $DIR/new_games > $DIR/jarchive_tmp.csv
 cat $DIR/jarchive_tmp.csv >> $DIR/jarchive.csv
