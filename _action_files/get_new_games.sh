@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+cd $(dirname "$0")
 
 x=`cat $PWD/last_episode.txt`
 start=$(($x+1))
