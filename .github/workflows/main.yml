@@ -1,7 +1,7 @@
 name: get_new_games
 on:
   schedule:
-    - cron:  '11 * * * *'
+    - cron:  '15 * * * *'
 
 jobs:
   get_new_games:
