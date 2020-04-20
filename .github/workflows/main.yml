@@ -41,7 +41,7 @@ jobs:
       run: |
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions[bot]"
-        git commit -m'[bot] update files'
+        git commit -a -m'[bot] update files'
         git push -f
         
    
