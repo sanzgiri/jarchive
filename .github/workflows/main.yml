@@ -22,11 +22,6 @@ jobs:
     - name: Copy Repository Contents
       uses: actions/checkout@v2
 
-    - name: Setup Node
-      uses: actions/setup-node@v1
-      with:
-        node-version: '10.x'
-
     - name: Set up Python
       uses: actions/setup-python@v1
       with:
