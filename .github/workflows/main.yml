@@ -1,8 +1,4 @@
-name: get_new_games
 
-on: 
-  schedule:
-    - cron: "50 6 * * *"
 
 jobs:
   get_new_games:
@@ -17,3 +13,58 @@ jobs:
     - uses: sanzgiri/jarchive@v1
     - name: dummy
       run: echo "Hello World"
+  
+name: get_new_games
+on:
+  schedule:
+    - cron:  '55 * * * *'
+
+jobs:
+  get_new_games:
+    if: github.event_name == 'schedule' 
+    runs-on: ubuntu-latest
+    steps:
+  
+    - name: See event name
+      run: |
+        echo "title ${title}"
+        echo "actor ${actor}"
+        echo "event_name ${event_name}"
+      env:
+        title: ${{ github.event.issue.title }}
+        actor: ${{ github.actor }}
+        event_name: ${{ github.event_name }}
+
+    - name: Copy Repository Contents
+      uses: actions/checkout@v2
+
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.6
+
+    - name: install dependencies
+      run: |
+        sudo apt-get update -y
+        pip3 install beautifulsoup4 lxml futures
+        
+    - name: update jeopardy archive
+      id: update_jarchive
+      run: |
+        ./_action_files/get_new_games.sh
+        
+    - name: save updated files
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git commit -m'[bot] update files'
+        git push -f
+        
+   
+  
+    
