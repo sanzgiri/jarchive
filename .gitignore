@@ -1,6 +1,19 @@
 .idea
 .DS_Store
 
+# Jarchive specific
+jarchive_2023.csv
+jarchive_2023_backup.csv
+jarchive_new.csv
+jarchive_missing.csv
+jarchive_tmp.csv
+jarchive_new_temp.csv
+new_games/
+new_games_2024/
+missing_games/
+temp_new_games/
+*.html
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

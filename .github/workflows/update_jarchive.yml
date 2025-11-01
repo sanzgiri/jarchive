@@ -1,0 +1,64 @@
+name: Update Jarchive Weekly
+
+on:
+  schedule:
+    # Run every Saturday at 3:00 PM UTC (weekly after new Jeopardy episodes)
+    - cron: '0 15 * * 6'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update_jarchive:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true  # Enable Git LFS
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install beautifulsoup4 lxml
+        
+    - name: Pull latest jarchive.csv from LFS
+      run: |
+        git lfs pull --include="jarchive.csv"
+        
+    - name: Update jarchive with new episodes
+      id: update
+      run: |
+        bash ./_action_files/update_jarchive.sh
+      continue-on-error: false
+      
+    - name: Check if there are changes
+      id: verify_diff
+      run: |
+        git diff --quiet jarchive.csv last_episode.txt || echo "has_changes=true" >> $GITHUB_OUTPUT
+        
+    - name: Commit and push changes
+      if: steps.verify_diff.outputs.has_changes == 'true'
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        
+        # Get stats for commit message
+        LAST_EPISODE=$(cat last_episode.txt)
+        TOTAL_CLUES=$(tail -n +2 jarchive.csv | wc -l)
+        
+        git add jarchive.csv last_episode.txt
+        git commit -m "Update jarchive.csv to episode $LAST_EPISODE (${TOTAL_CLUES} total clues)"
+        
+        # Push with LFS
+        git lfs install
+        git push
+        
+    - name: No changes detected
+      if: steps.verify_diff.outputs.has_changes != 'true'
+      run: |
+        echo "No new episodes found. Archive is up to date."
