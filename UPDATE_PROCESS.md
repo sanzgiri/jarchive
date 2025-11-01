@@ -9,11 +9,12 @@ The jarchive dataset is automatically updated weekly via GitHub Actions to downl
 ## Files Structure
 
 ### Main Data Files
-- **`jarchive.csv`** - Main archive file (stored in Git LFS)
+- **`jarchive.csv`** - Main archive file (tracked in git)
   - Contains all Jeopardy! clues from episode 1 to the latest
   - Sorted by game ID (gid)
   - Uses `||` as field separator
   - Currently: 576,253 clues from 9,298 games (as of Nov 1, 2025)
+  - Size: ~83MB (under GitHub's 100MB limit)
 
 - **`jarchive_2023.csv`** - Local working copy (not tracked in git)
 - **`jarchive_2023_backup.csv`** - Local backup (not tracked in git)
@@ -105,31 +106,19 @@ git commit -m "Manual update to episode $(cat last_episode.txt)"
 git push
 ```
 
-## Git LFS Setup
+## Large File Handling
 
-The `jarchive.csv` file is tracked with Git LFS due to its size (83MB+).
+The `jarchive.csv` file is stored as a regular git file (83MB), which is under GitHub's 100MB file size limit.
 
-### Configuration
-`.gitattributes`:
-```
-jarchive.csv filter=lfs diff=lfs merge=lfs -text
-```
+### Note on Git LFS
+While the repository has `.gitattributes` configured for LFS, it is not currently enabled on GitHub. The file size is manageable without LFS at this time.
 
-### Working with LFS
-
-```bash
-# Install Git LFS (one time)
-git lfs install
-
-# Pull LFS files
-git lfs pull
-
-# Check LFS status
-git lfs ls-files
-
-# Track new large file
-git lfs track "*.csv"
-```
+### Future Considerations
+If the file grows beyond 100MB, consider:
+1. Enabling Git LFS on the GitHub repository
+2. Compressing the CSV file (gzip)
+3. Splitting into multiple files by year/season
+4. Using external storage (S3, releases, etc.)
 
 ## Missing Episodes
 
@@ -169,10 +158,6 @@ These will be automatically added once they become available on the source websi
 git clone https://github.com/sanzgiri/jarchive.git
 cd jarchive
 
-# Set up Git LFS
-git lfs install
-git lfs pull
-
 # Create virtual environment
 uv venv
 source .venv/bin/activate  # or `source .venv/bin/activate` on Windows
@@ -185,15 +170,13 @@ uv pip install beautifulsoup4 lxml
 - **Python 3.11+**
 - **beautifulsoup4**: HTML parsing
 - **lxml**: XML/HTML parser backend
-- **Git LFS**: Large file storage
 
 ## Troubleshooting
 
 ### Issue: jarchive.csv not updating
-**Solution**: Check if Git LFS is installed and configured properly
+**Solution**: Ensure you have the latest version
 ```bash
-git lfs install
-git lfs pull
+git pull origin master
 ```
 
 ### Issue: GitHub Action fails

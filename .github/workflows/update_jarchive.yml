@@ -13,8 +13,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        lfs: true  # Enable Git LFS
         
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -25,10 +23,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install beautifulsoup4 lxml
-        
-    - name: Pull latest jarchive.csv from LFS
-      run: |
-        git lfs pull --include="jarchive.csv"
         
     - name: Update jarchive with new episodes
       id: update
@@ -53,9 +47,6 @@ jobs:
         
         git add jarchive.csv last_episode.txt
         git commit -m "Update jarchive.csv to episode $LAST_EPISODE (${TOTAL_CLUES} total clues)"
-        
-        # Push with LFS
-        git lfs install
         git push
         
     - name: No changes detected

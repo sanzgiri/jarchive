@@ -8,7 +8,7 @@ This update modernizes the jarchive dataset and automates weekly updates via Git
 - ✅ Downloaded episodes 7291-9302 (2,012 new games)
 - ✅ Recovered 9 previously missing episodes (349, 1478, 2681, 2815, 3303, 3503, 4230, 5997, 6704)
 - ✅ Sorted entire dataset by game ID
-- ✅ Updated jarchive.csv (Git LFS)
+- ✅ Updated jarchive.csv (regular git file, 83MB)
 
 ### Final Statistics
 - **Total Clues**: 576,253
@@ -57,15 +57,14 @@ This update modernizes the jarchive dataset and automates weekly updates via Git
 - **Manual**: Can be triggered via GitHub Actions UI
 
 ### Process Flow
-1. Checkout repository with Git LFS
+1. Checkout repository
 2. Install Python dependencies (beautifulsoup4, lxml)
-3. Pull latest jarchive.csv from LFS
-4. Run update script:
+3. Run update script:
    - Download new episodes from j-archive.com
    - Parse HTML to CSV format
    - Merge and sort with existing data
    - Update last_episode.txt
-5. Commit and push changes (if any)
+4. Commit and push changes (if any)
 
 ### Monitoring
 - Check GitHub Actions tab for execution logs
@@ -78,10 +77,6 @@ This update modernizes the jarchive dataset and automates weekly updates via Git
 # Clone repository
 git clone https://github.com/sanzgiri/jarchive.git
 cd jarchive
-
-# Set up Git LFS
-git lfs install
-git lfs pull
 
 # Create virtual environment with uv
 uv venv
@@ -125,7 +120,6 @@ git push
 - Robust merge and sort process
 - Automatic duplicate detection
 - Clean temporary file management
-- Git LFS integration
 
 ## Known Issues
 
