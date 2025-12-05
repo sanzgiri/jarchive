@@ -20,18 +20,18 @@ jobs:
         event_name: ${{ github.event_name }}
 
     - name: Copy Repository Contents
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.7.15
-        architechture: x64
+        python-version: '3.11'
+        architecture: x64
 
     - name: install dependencies
       run: |
         sudo apt-get update -y
-        pip3 install beautifulsoup4 lxml futures
+        pip3 install beautifulsoup4 lxml
         
     - name: update jeopardy archive
       id: update_jarchive
