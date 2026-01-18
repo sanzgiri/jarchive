@@ -31,12 +31,28 @@ def parse_game(f, gid):
     if not r:
         # This game does not have a final clue
         return
-    category = r.find("td", class_="category_name").get_text()
-    text = r.find("td", class_="clue_text").get_text()
-    answer = BeautifulSoup(r.find("div", onmouseover=True).get("onmouseover"), "lxml")
-    answer = answer.find("em").get_text()
-    # False indicates no preset value for a clue
-    insert([gid, airdate, 3, category, False, text, answer])
+
+    try:
+        category_elem = r.find("td", class_="category_name")
+        category = category_elem.get_text() if category_elem else ""
+
+        text_elem = r.find("td", class_="clue_text")
+        text = text_elem.get_text() if text_elem else ""
+
+        # Extract answer with error handling
+        answer = ""
+        div = r.find("div", onmouseover=True)
+        if div:
+            answer_soup = BeautifulSoup(div.get("onmouseover"), "lxml")
+            answer_em = answer_soup.find("em")
+            if answer_em:
+                answer = answer_em.get_text()
+
+        # False indicates no preset value for a clue
+        insert([gid, airdate, 3, category, False, text, answer])
+    except Exception as e:
+        # Skip Final Jeopardy if it can't be parsed
+        pass
 
 
 def parse_round(bsoup, rnd, gid, airdate):
@@ -55,11 +71,26 @@ def parse_round(bsoup, rnd, gid, airdate):
     for a in r.find_all("td", class_="clue"):
         is_missing = True if not a.get_text().strip() else False
         if not is_missing:
-            value = a.find("td", class_=re.compile("clue_value")).get_text().lstrip("D: $")
-            text = a.find("td", class_="clue_text").get_text()
-            answer = BeautifulSoup(a.find("div", onmouseover=True).get("onmouseover"), "lxml")
-            answer = answer.find("em", class_="correct_response").get_text()
-            insert([gid, airdate, rnd, categories[x], value, text, answer])
+            try:
+                value_elem = a.find("td", class_=re.compile("clue_value"))
+                value = value_elem.get_text().lstrip("D: $") if value_elem else ""
+
+                text_elem = a.find("td", class_="clue_text")
+                text = text_elem.get_text() if text_elem else ""
+
+                # Extract answer with error handling
+                answer = ""
+                div = a.find("div", onmouseover=True)
+                if div:
+                    answer_soup = BeautifulSoup(div.get("onmouseover"), "lxml")
+                    answer_em = answer_soup.find("em", class_="correct_response")
+                    if answer_em:
+                        answer = answer_em.get_text()
+
+                insert([gid, airdate, rnd, categories[x], value, text, answer])
+            except Exception as e:
+                # Skip clues that can't be parsed
+                pass
         x = 0 if x == 5 else x + 1
     return True
 

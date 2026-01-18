@@ -2,10 +2,12 @@ name: get new games
 on:
   schedule:
     - cron:  '25 15 * * 6'
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
   get_new_games:
-    if: github.event_name == 'schedule' 
+    # Disabled - using update_jarchive.yml instead
+    if: false 
     runs-on: ubuntu-latest
     steps:
   
