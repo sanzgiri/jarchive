@@ -1,0 +1,56 @@
+name: Backfill Missing Answers
+
+on:
+  workflow_dispatch:
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install beautifulsoup4 lxml
+
+    - name: Run backfill
+      run: |
+        python3 backfill_answers.py --batch-size 25
+
+    - name: Check results
+      run: |
+        echo "=== Empty answer stats after backfill ==="
+        python3 -c "
+        total = 0
+        empty = 0
+        with open('jarchive.csv', 'r') as f:
+            f.readline()
+            for line in f:
+                parts = line.rstrip('\n').split(' || ')
+                if len(parts) == 7:
+                    total += 1
+                    if not parts[6].strip():
+                        empty += 1
+        print(f'Total clues: {total}')
+        print(f'Empty answers: {empty} ({empty*100/total:.1f}%)')
+        "
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git diff --quiet jarchive.csv || {
+          TOTAL_CLUES=$(tail -n +2 jarchive.csv | wc -l)
+          git add jarchive.csv
+          git commit -m "Backfill missing answers (${TOTAL_CLUES} total clues)"
+          git push
+        }
