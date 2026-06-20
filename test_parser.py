@@ -43,7 +43,7 @@ OLD_FORMAT_HTML = '''<html><head><title>J! Archive - Show #100, aired 2021-01-15
 </table>
 </body></html>'''
 
-# New format: hidden div with id="clue_X_correct_response"
+# New format: hidden td with <em class="correct_response"> (current j-archive)
 NEW_FORMAT_HTML = '''<html><head><title>J! Archive - Show #9400, aired 2025-03-15</title></head><body>
 <div id="jeopardy_round">
 <table><tr>
@@ -55,15 +55,27 @@ NEW_FORMAT_HTML = '''<html><head><title>J! Archive - Show #9400, aired 2025-03-1
 <td class="category_name">MUSIC</td>
 </tr></table>
 <table><tr>
-<td class="clue" id="clue_J_1_1">
-<table><tr><td class="clue_value">$200</td></tr>
-<tr><td class="clue_text" id="clue_J_1_1_stuck">This president was inaugurated in 2021</td></tr></table>
-<div id="clue_J_1_1_correct_response" style="display:none;">Biden</div>
+<td class="clue">
+<table>
+<tr><td><div onclick="togglestick('clue_J_1_1_stuck')" onmouseout="toggle('clue_J_1_1_r', 'clue_J_1_1', 'clue_J_1_1_stuck')" onmouseover="toggle('clue_J_1_1', 'clue_J_1_1_r', 'clue_J_1_1_stuck')">
+<table class="clue_header"><tr><td class="clue_unstuck" id="clue_J_1_1_stuck"></td><td class="clue_value">$200</td></tr></table>
+</div></td></tr>
+<tr>
+<td class="clue_text" id="clue_J_1_1">This president was inaugurated in 2021</td>
+<td class="clue_text" id="clue_J_1_1_r" style="display:none;"><em class="correct_response">Biden</em></td>
+</tr>
+</table>
 </td>
-<td class="clue" id="clue_J_2_1">
-<table><tr><td class="clue_value">$200</td></tr>
-<tr><td class="clue_text" id="clue_J_2_1_stuck">The chemical symbol Fe represents this element</td></tr></table>
-<div id="clue_J_2_1_correct_response" style="display:none;">iron</div>
+<td class="clue">
+<table>
+<tr><td><div onclick="togglestick('clue_J_2_1_stuck')" onmouseout="toggle('clue_J_2_1_r', 'clue_J_2_1', 'clue_J_2_1_stuck')" onmouseover="toggle('clue_J_2_1', 'clue_J_2_1_r', 'clue_J_2_1_stuck')">
+<table class="clue_header"><tr><td class="clue_unstuck" id="clue_J_2_1_stuck"></td><td class="clue_value">$200</td></tr></table>
+</div></td></tr>
+<tr>
+<td class="clue_text" id="clue_J_2_1">The chemical symbol Fe represents this element</td>
+<td class="clue_text" id="clue_J_2_1_r" style="display:none;"><em class="correct_response">iron</em></td>
+</tr>
+</table>
 </td>
 <td class="clue"></td><td class="clue"></td><td class="clue"></td><td class="clue"></td>
 </tr></table>
@@ -78,22 +90,30 @@ NEW_FORMAT_HTML = '''<html><head><title>J! Archive - Show #9400, aired 2025-03-1
 <td class="category_name">POP CULTURE</td>
 </tr></table>
 <table><tr>
-<td class="clue" id="clue_DJ_1_1">
-<table><tr><td class="clue_value_daily_double">Daily Double: $2,000</td></tr>
-<tr><td class="clue_text" id="clue_DJ_1_1_stuck">This French leader was exiled to Elba</td></tr></table>
-<div id="clue_DJ_1_1_correct_response" style="display:none;">Napoleon</div>
+<td class="clue">
+<table>
+<tr><td><div onclick="togglestick('clue_DJ_1_1_stuck')" onmouseout="toggle('clue_DJ_1_1_r', 'clue_DJ_1_1', 'clue_DJ_1_1_stuck')" onmouseover="toggle('clue_DJ_1_1', 'clue_DJ_1_1_r', 'clue_DJ_1_1_stuck')">
+<table class="clue_header"><tr><td class="clue_unstuck" id="clue_DJ_1_1_stuck"></td><td class="clue_value_daily_double">DD: $2,000</td></tr></table>
+</div></td></tr>
+<tr>
+<td class="clue_text" id="clue_DJ_1_1">This French leader was exiled to Elba</td>
+<td class="clue_text" id="clue_DJ_1_1_r" style="display:none;"><em class="correct_response">Napoleon</em></td>
+</tr>
+</table>
 </td>
 <td class="clue"></td><td class="clue"></td><td class="clue"></td><td class="clue"></td><td class="clue"></td>
 </tr></table>
 </div>
 <table class="final_round">
 <tr><td class="category_name">U.S. PRESIDENTS</td></tr>
-<tr><td class="clue_text" id="clue_FJ">The only president to serve non-consecutive terms</td></tr>
-<div id="clue_FJ_correct_response" style="display:none;">Grover Cleveland</div>
+<tr>
+<td class="clue_text" id="clue_FJ">The only president to serve non-consecutive terms</td>
+<td class="clue_text" id="clue_FJ_r" style="display:none;"><em class="correct_response">Grover Cleveland</em></td>
+</tr>
 </table>
 </body></html>'''
 
-# Edge case: answer with special characters
+# Edge case: answer with special characters (real format)
 SPECIAL_CHARS_HTML = '''<html><head><title>J! Archive - Show #9450, aired 2025-05-01</title></head><body>
 <div id="jeopardy_round">
 <table><tr>
@@ -105,18 +125,26 @@ SPECIAL_CHARS_HTML = '''<html><head><title>J! Archive - Show #9450, aired 2025-0
 <td class="category_name">CAT6</td>
 </tr></table>
 <table><tr>
-<td class="clue" id="clue_J_1_1">
-<table><tr><td class="clue_value">$200</td></tr>
-<tr><td class="clue_text" id="clue_J_1_1_stuck">This &quot;Rock &amp; Roll&quot; hall of famer sang &quot;Purple Rain&quot;</td></tr></table>
-<div id="clue_J_1_1_correct_response" style="display:none;">Prince</div>
+<td class="clue">
+<table>
+<tr><td><div onmouseover="toggle('clue_J_1_1', 'clue_J_1_1_r', 'clue_J_1_1_stuck')">
+<table class="clue_header"><tr><td class="clue_unstuck" id="clue_J_1_1_stuck"></td><td class="clue_value">$200</td></tr></table>
+</div></td></tr>
+<tr>
+<td class="clue_text" id="clue_J_1_1">This &quot;Rock &amp; Roll&quot; hall of famer sang &quot;Purple Rain&quot;</td>
+<td class="clue_text" id="clue_J_1_1_r" style="display:none;"><em class="correct_response">Prince</em></td>
+</tr>
+</table>
 </td>
 <td class="clue"></td><td class="clue"></td><td class="clue"></td><td class="clue"></td><td class="clue"></td>
 </tr></table>
 </div>
 <table class="final_round">
 <tr><td class="category_name">MATH</td></tr>
-<tr><td class="clue_text" id="clue_FJ">This number is both the square of 12 &amp; a gross</td></tr>
-<div id="clue_FJ_correct_response" style="display:none;">144</div>
+<tr>
+<td class="clue_text" id="clue_FJ">This number is both the square of 12 &amp; a gross</td>
+<td class="clue_text" id="clue_FJ_r" style="display:none;"><em class="correct_response">144</em></td>
+</tr>
 </table>
 </body></html>'''
 

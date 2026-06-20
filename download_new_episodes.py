@@ -17,7 +17,7 @@ NUM_THREADS = 10  # Balanced threading
 
 def download_page(game_id):
     """Download a single game page."""
-    url = f'http://j-archive.com/showgame.php?game_id={game_id}'
+    url = f'https://j-archive.com/showgame.php?game_id={game_id}'
     try:
         response = urlopen(url)
         if response.code == 200:
@@ -140,7 +140,7 @@ def find_last_available(start_id, max_id):
 
 def check_game_exists(game_id):
     """Quick check if a game exists without downloading."""
-    url = f'http://j-archive.com/showgame.php?game_id={game_id}'
+    url = f'https://j-archive.com/showgame.php?game_id={game_id}'
     try:
         response = urlopen(url)
         if response.code == 200:

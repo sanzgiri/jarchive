@@ -22,7 +22,7 @@ from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 
 SECONDS_BETWEEN_REQUESTS = 2
-BASE_URL = "http://j-archive.com/showgame.php?game_id={}"
+BASE_URL = "https://j-archive.com/showgame.php?game_id={}"
 
 
 def find_episodes_missing_answers(csv_path):
@@ -57,7 +57,7 @@ def extract_answer_from_clue(clue_td):
     """Extract the answer from a clue td element using both old and new formats."""
     answer = ""
 
-    # Format 1 (pre-2022): <div onmouseover="..."><em class="correct_response">
+    # Format 1: <div onmouseover="..."> with inline <em class="correct_response">
     div = clue_td.find("div", onmouseover=True)
     if div:
         mouseover = div.get("onmouseover", "")
@@ -68,20 +68,11 @@ def extract_answer_from_clue(clue_td):
         if answer_em:
             answer = answer_em.get_text()
 
-    # Format 2 (2022+): <div id="clue_X_correct_response" style="display:none;">
+    # Format 2: <em class="correct_response"> in hidden sibling td
     if not answer:
-        text_elem = clue_td.find("td", class_="clue_text")
-        if text_elem:
-            text_id = text_elem.get("id", "")
-            if text_id:
-                base_id = text_id.replace("_stuck", "")
-                resp_div = clue_td.find("div", id=f"{base_id}_correct_response")
-                if resp_div:
-                    answer = resp_div.get_text(strip=True)
-        if not answer:
-            resp_div = clue_td.find("div", id=re.compile("correct_response"))
-            if resp_div:
-                answer = resp_div.get_text(strip=True)
+        answer_em = clue_td.find("em", class_="correct_response")
+        if answer_em:
+            answer = answer_em.get_text(strip=True)
 
     return answer
 
@@ -120,9 +111,13 @@ def parse_game_answers(html, gid):
             if answer_em:
                 answer = answer_em.get_text()
         if not answer:
-            resp_div = r.find("div", id=re.compile("correct_response"))
-            if resp_div:
-                answer = resp_div.get_text(strip=True)
+            answer_em = r.find("em", class_="correct_response")
+            if answer_em:
+                answer = answer_em.get_text(strip=True)
+        if not answer:
+            answer_em = r.find("em")
+            if answer_em:
+                answer = answer_em.get_text(strip=True)
         if answer:
             text_elem = r.find("td", class_="clue_text")
             text = text_elem.get_text() if text_elem else ""

@@ -73,7 +73,7 @@ def parse_round(bsoup, rnd, gid, airdate):
                 
                 # Extract answer - try multiple formats
                 answer = ""
-                # Format 1 (pre-2022): <div onmouseover="..."><em class="correct_response">
+                # Format 1: <div onmouseover="..."> containing inline <em class="correct_response">
                 div = a.find("div", onmouseover=True)
                 if div:
                     answer_soup = BeautifulSoup(div.get("onmouseover"), "lxml")
@@ -81,20 +81,11 @@ def parse_round(bsoup, rnd, gid, airdate):
                     if answer_em:
                         answer = answer_em.get_text()
                 
-                # Format 2 (2022+): <div id="clue_X_correct_response" style="display:none;">
+                # Format 2: hidden <td id="clue_X_r"> with <em class="correct_response">
                 if not answer:
-                    text_elem_id = text_elem.get("id", "") if text_elem else ""
-                    if text_elem_id:
-                        # Try _stuck suffix pattern (id="clue_J_1_1_stuck" -> "clue_J_1_1_correct_response")
-                        base_id = text_elem_id.replace("_stuck", "")
-                        resp_div = a.find("div", id=f"{base_id}_correct_response")
-                        if resp_div:
-                            answer = resp_div.get_text(strip=True)
-                    # Also try finding any hidden div with "correct_response" in its id
-                    if not answer:
-                        resp_div = a.find("div", id=re.compile("correct_response"))
-                        if resp_div:
-                            answer = resp_div.get_text(strip=True)
+                    answer_em = a.find("em", class_="correct_response")
+                    if answer_em:
+                        answer = answer_em.get_text(strip=True)
                 
                 clues.append([gid, airdate, rnd, categories[x], value, text, answer])
             except Exception as e:
@@ -121,7 +112,7 @@ def parse_final_jeopardy(bsoup, gid, airdate):
         
         # Extract answer - try multiple formats
         answer = ""
-        # Format 1: <div onmouseover="..."><em>
+        # Format 1: <div onmouseover="..."> with inline <em>
         div = r.find("div", onmouseover=True)
         if div:
             answer_soup = BeautifulSoup(div.get("onmouseover"), "lxml")
@@ -129,11 +120,16 @@ def parse_final_jeopardy(bsoup, gid, airdate):
             if answer_em:
                 answer = answer_em.get_text()
         
-        # Format 2: <div id="clue_FJ_correct_response" style="display:none;">
+        # Format 2: <em class="correct_response"> in hidden td
         if not answer:
-            resp_div = r.find("div", id=re.compile("correct_response"))
-            if resp_div:
-                answer = resp_div.get_text(strip=True)
+            answer_em = r.find("em", class_="correct_response")
+            if answer_em:
+                answer = answer_em.get_text(strip=True)
+        # Fallback: any <em> in the response area
+        if not answer:
+            answer_em = r.find("em")
+            if answer_em:
+                answer = answer_em.get_text(strip=True)
         
         # Final Jeopardy has no preset value (False in original code)
         clues.append([gid, airdate, 3, category, "False", text, answer])
