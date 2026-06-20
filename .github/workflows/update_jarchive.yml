@@ -47,6 +47,7 @@ jobs:
         
         git add jarchive.csv last_episode.txt
         git commit -m "Update jarchive.csv to episode $LAST_EPISODE (${TOTAL_CLUES} total clues)"
+        git pull --rebase origin master
         git push
         
     - name: No changes detected
