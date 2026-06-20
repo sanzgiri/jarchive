@@ -52,5 +52,6 @@ jobs:
           TOTAL_CLUES=$(tail -n +2 jarchive.csv | wc -l)
           git add jarchive.csv
           git commit -m "Backfill missing answers (${TOTAL_CLUES} total clues)"
+          git pull --rebase origin master
           git push
         }
