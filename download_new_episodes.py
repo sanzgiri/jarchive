@@ -114,39 +114,43 @@ def download_range(start_id, end_id, output_dir):
     return completed, failed
 
 def find_last_available(start_id, max_id):
-    """Find the last available episode using binary search-like probing."""
-    # First check if start_id exists
-    if not check_game_exists(start_id):
-        return start_id - 1
+    """Find the last available episode by checking sequentially with early exit."""
+    print(f"Checking if new episodes exist starting from {start_id}...")
 
-    # Do a quick probe forward to find approximate end
-    probe = start_id
-    step = 50
+    # Check up to 100 episodes sequentially
+    # If we find 5 consecutive missing episodes, we've likely reached the end
+    consecutive_missing = 0
+    last_found = start_id - 1
 
-    while probe <= max_id:
-        if check_game_exists(probe):
-            probe += step
+    for game_id in range(start_id, min(start_id + 100, max_id + 1)):
+        if check_game_exists(game_id):
+            last_found = game_id
+            consecutive_missing = 0
+            print(f"  Episode {game_id} exists")
         else:
-            # Found a gap, search backward
-            break
+            consecutive_missing += 1
+            # If we find 5 consecutive missing episodes, assume we've reached the end
+            if consecutive_missing >= 5:
+                print(f"  Found {consecutive_missing} consecutive missing episodes, stopping search")
+                break
 
-    # Now find exact end by checking backwards
-    end = probe - step
-    for i in range(probe - 1, end, -1):
-        if check_game_exists(i):
-            return i
+    if last_found < start_id:
+        print(f"No new episodes available after episode {start_id - 1}")
+    else:
+        print(f"Latest available episode: {last_found}")
 
-    return end
+    return last_found
 
 def check_game_exists(game_id):
     """Quick check if a game exists without downloading."""
-    url = f'https://j-archive.com/showgame.php?game_id={game_id}'
+    url = f'http://j-archive.com/showgame.php?game_id={game_id}'
     try:
         response = urlopen(url)
         if response.code == 200:
             html = response.read()
-            return ERROR_MSG not in html
-    except:
+            exists = ERROR_MSG not in html
+            return exists
+    except Exception:
         pass
     return False
 
